@@ -116,4 +116,15 @@ router.delete("/users/me", auth, async (req, res) => {
   }
 });
 
+// Backend endpoint to load pages for admin panel
+router.get("/users/verify", auth, async (req, res) => {
+  try {
+    res.send({
+      valid: true,
+    });
+  } catch (e) {
+    res.status(500).send({ error: "Something went wrong" });
+  }
+});
+
 module.exports = router;

@@ -1,24 +1,61 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, HttpClient, FormGroup, FormBuilder],
+  imports: [RouterLink, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, form: FormsModule) {}
+  loginForm!: FormGroup;
+
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
-    const SERVER_URL = 'http://localhost:3000/users/login';
-    form: FormGroup;
+    this.loginForm = this.fb.group({
+      email: [''],
+      password: [''],
+    });
+    this.checkLogin();
   }
-  onSubmit() {}
-  login() {
-    this.router.navigate(['/adminpanelapp']);
+
+  onSubmit() {
+    const SERVER_URL = 'http://localhost:3000/users/login';
+    this.http.post(SERVER_URL, this.loginForm.value).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        this.router.navigate(['/adminpanelapp']);
+      },
+      error: (err) => {
+        console.error('Login failed');
+      },
+    });
+  }
+
+  checkLogin() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      this.http
+        .get('http://localhost:3000/users/verify', { headers })
+        .subscribe({
+          next: (res: any) => {
+            if (res.valid === true) {
+              this.router.navigate(['/adminpanelapp']);
+            } else {
+              localStorage.removeItem('token'); // invalid token
+            }
+          },
+          error: () => localStorage.removeItem('token'), // invalid token
+        });
+    }
   }
 }
