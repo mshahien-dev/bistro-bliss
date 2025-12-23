@@ -22,14 +22,12 @@ export class MenuSection1Component implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       const category = params['category'] || '';
-      console.log('category', category);
-      this.getMenuItems('?category' + category);
+      this.getMenuItems(`?category=${category}`);
     });
   }
   getMenuItems(queries: string = '') {
     this.subscription = this.menuService.getMenu(queries).subscribe((data) => {
       this.products = data;
-      console.log('products', data);
     });
   }
 }

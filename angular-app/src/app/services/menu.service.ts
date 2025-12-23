@@ -8,11 +8,11 @@ import { map, Observable, tap } from 'rxjs';
 export class MenuService {
   protected httpClient = inject(HttpClient);
   constructor() {}
-  public items: any[] = [];
+  private items: any[] = [];
 
   getMenu(queries: string = ''): Observable<any[]> {
     return this.httpClient
-      .get<any[]>('http://localhost:3000/items' + queries)
+      .get<any[]>(`http://localhost:3000/items${queries}`)
       .pipe(
         tap((res: any[]) => {
           this.items = res; // Store the response in the items array

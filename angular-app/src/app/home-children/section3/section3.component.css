@@ -36,7 +36,8 @@
   color: white;
   padding: 1.5rem;
   border-radius: 10px;
-  max-width: 60%;
+  max-width: 65%;
+  min-width: 350px;
 }
 
 .img-text h3 {
