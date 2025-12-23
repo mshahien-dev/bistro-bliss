@@ -28,9 +28,9 @@ bistro-bliss/
 
 ### ⚡ Performance Optimization (Redis Caching)
 
-To improve scalability, I implemented a Redis caching layer to reduce database load and minimize latency. Below is a benchmark comparing request times across different environments.
+To improve scalability, I integrated a Redis caching layer. The following benchmarks compare the response time of the `GET /items` endpoint across different database and cache configurations.
 
-#### Latency Benchmark: `GET /items`
+#### 📊 Latency Benchmark
 
 | Data Source               | No Cache (Direct DB) | Local Redis Cache | Cloud Redis Cache |
 | :------------------------ | :------------------: | :---------------: | :---------------: |
@@ -38,13 +38,16 @@ To improve scalability, I implemented a Redis caching layer to reduce database l
 | **Cloud MongoDB** (4 KB)  |        55 ms         |       2 ms        |      119 ms       |
 | **Cloud MongoDB** (70 KB) |        220 ms        |       3 ms        |      180 ms       |
 
-> **Note:** Tests were conducted using Postman from Cairo, Egypt. Cloud DB located in `AWS / Paris` and Cloud Redis in `AWS / Frankfurt`.
+> **Note:** Tests were conducted via Postman from **Cairo, Egypt**.
+>
+> - **Cloud DB:** AWS / Paris (eu-west-3)
+> - **Cloud Redis:** AWS / Frankfurt (eu-central-1)
 
 #### 💡 Key Analysis
 
-- **Performance Gain:** Redis achieved a **~98% reduction in latency** for cloud data (dropping from 220ms to 180ms), demonstrating massive cache efficiency.
-- **Scalability:** While MongoDB latency tripled as the payload grew from 4 KB to 70 KB, Redis response times remained nearly constant.
-- **Network Optimization:** Caching data closer to the application logic effectively bypassed the geographic latency costs of cross-continental database round-trips.
+- **Significant Performance Gain:** Using a local Redis instance resulted in a **~98% reduction in latency** for large datasets (dropping from **220ms** to **3ms**).
+- **Scalability:** As payload size increased from 4 KB to 70 KB, direct MongoDB latency quadrupled. However, Redis response times remained constant at ~2-3ms, proving its efficiency for high-traffic data.
+- **Network Constraints:** The high latency seen in **Cloud Redis** (119ms+) highlights the impact of geographic distance between the client (Cairo) and the server (Frankfurt). This validates the need for caching strategies that locate data as close to the application logic as possible to minimize Round-Trip Time (RTT).
 
 ## 🚀 Setup & Run (Development)
 
