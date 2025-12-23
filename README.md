@@ -22,9 +22,29 @@ bistro-bliss/
 ## 🧰 Tech Stack
 
 - Frontend: Angular, TypeScript, HTML, CSS, Tailwind
-- Backend: Node.js, Express, Cors
+- Backend: Node.js, Express, Cors, Redis
 - Admin Panel: Angular, TypeScript, HTML, CSS, Tailwind
 - Other technologies / dependencies: MongoDB, Mongoose, JWT, bcryptjs
+
+### ⚡ Performance Optimization (Redis Caching)
+
+To improve scalability, I implemented a Redis caching layer to reduce database load and minimize latency. Below is a benchmark comparing request times across different environments.
+
+#### Latency Benchmark: `GET /items`
+
+| Data Source               | No Cache (Direct DB) | Local Redis Cache | Cloud Redis Cache |
+| :------------------------ | :------------------: | :---------------: | :---------------: |
+| **Local MongoDB** (4 KB)  |         6 ms         |       2 ms        |      120 ms       |
+| **Cloud MongoDB** (4 KB)  |        55 ms         |       2 ms        |      119 ms       |
+| **Cloud MongoDB** (70 KB) |        220 ms        |       3 ms        |      180 ms       |
+
+> **Note:** Tests were conducted using Postman from Cairo, Egypt. Cloud DB located in `AWS / Paris` and Cloud Redis in `AWS / Frankfurt`.
+
+#### 💡 Key Analysis
+
+- **Performance Gain:** Redis achieved a **~98% reduction in latency** for cloud data (dropping from 220ms to 180ms), demonstrating massive cache efficiency.
+- **Scalability:** While MongoDB latency tripled as the payload grew from 4 KB to 70 KB, Redis response times remained nearly constant.
+- **Network Optimization:** Caching data closer to the application logic effectively bypassed the geographic latency costs of cross-continental database round-trips.
 
 ## 🚀 Setup & Run (Development)
 
@@ -46,6 +66,9 @@ Create a `dev.env` file in the `backend` directory with the following:
 - ADMIN_NAME
 - ADMIN_EMAIL
 - ADMIN_PASSWORD
+- REDIS_HOST
+- REDIS_PORT
+- REDIS_PASSWORD
 
 ### Running the Application
 
@@ -54,7 +77,6 @@ Create a `dev.env` file in the `backend` directory with the following:
 ```bash
 cd backend
 npm install
-ng serve
 node --watch --env-file=./dev.env src/index.js
 ```
 
@@ -71,8 +93,6 @@ ng serve
 This should serve the frontend, typically at http://localhost:4200.
 
 ### Admin Panel (Angular)
-
-> Repeat the same steps in the admin-panel folder:
 
 ```
 cd admin-panel
@@ -127,4 +147,6 @@ The admin panel will typically run at http://localhost:4201.
 
 ## 🙏 Acknowledgments
 
-Special thanks to the original UI designer/owner for providing the visual foundation that inspired this project
+This project is based on the following Figma Community design:
+**Design:** [Food - Website Design](https://www.figma.com/community/file/1294173080512093987)
+**Creator:** Jaydeep Kaila
